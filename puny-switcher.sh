@@ -7,7 +7,7 @@
 # https://github.com/roadkell/puny-switcher
 #
 # Arguments:
-# 	$1: action: get|set|iset|convert|cleanup
+# 	$1: action: get|set|iset|switch|convert|restore
 # 	$2: layout name (for set) or index (for iset) to switch to: en|ru|0|1
 #
 # TODO: detect and parse keyboard layouts from the current xkb config
@@ -103,11 +103,11 @@ get)
 	# Print available layouts, current layout, and its chars to stdout
 	gdbusstr=$(readdbus)
 	getlayouts "$gdbusstr"
-	echo "${layouts[@]}"
+	printf >&1 "puny-switcher: available layouts: %s\n" "${layouts[@]}"
 	curlayout=$(getlayout "$gdbusstr")
-	echo "$curlayout"
+	printf >&1 "puny-switcher: current layout: %s\n" "$curlayout"
 	srcchars="${chardict["$curlayout"]}"
-	echo "$srcchars"
+	printf >&1 "puny-switcher: layout characters: %s\n" "$srcchars"
 	;;
 
 set)
@@ -123,9 +123,8 @@ iset)
 	setlayout "$newlayout"
 	;;
 
-convert)
-	# Convert selected text
-
+switch)
+	# Switch current layout
 	gdbusstr=$(readdbus)
 	getlayouts "$gdbusstr"
 	curlayout=$(getlayout "$gdbusstr")
@@ -135,34 +134,59 @@ convert)
 	else
 		newlayout=${layouts[0]}
 	fi
+	setlayout "$newlayout"
+	;;
 
-	srcchars="${chardict["$curlayout"]}"
-	destchars="${chardict["$newlayout"]}"
+convert)
+	# Convert selected text
 
 	# Save clipboard content to secondary buffer
+	#xsel --clear --secondary
 	xsel --output --clipboard | xsel --input --secondary
-	# Alternatively, xclip can be used like
-	# xclip -out -selection clipboard | xsel -in -selection secondary
 
 	# Get content of the primary buffer, i.e. latest active selection made in any window
 	instr=$(xsel --output --primary)
 
-	outstr=$(strconv "$instr" "$srcchars" "$destchars")
+	if [[ -n $instr ]]; then
+		# Selection is non-empty
 
-	# Debug
-	printf >&1 "%s\n" "$outstr"
+		gdbusstr=$(readdbus)
+		getlayouts "$gdbusstr"
+		curlayout=$(getlayout "$gdbusstr")
 
-	# xsel -ip writes to the primary buffer, as if the user has made a new selection
-	# xsel -ib writes to clipboard, as if the user has pressed "copy"
-	echo -n "$outstr" | xsel --input --clipboard
+		if [[ "$curlayout" == "${layouts[0]}" ]]; then
+			newlayout=${layouts[1]}
+		else
+			newlayout=${layouts[0]}
+		fi
 
-	# Delete selected text in the application and clear primary buffer
-	# (may only be needed in terminal emulators and such)
-	xsel --delete --primary
+		srcchars="${chardict["$curlayout"]}"
+		destchars="${chardict["$newlayout"]}"
+
+		outstr=$(strconv "$instr" "$srcchars" "$destchars")
+
+		# Debug
+		printf >&1 "puny-switcher: output string: %s\n" "$outstr"
+
+		# xsel -ip writes to the primary buffer, as if the user has made a new selection
+		# xsel -ib writes to clipboard, as if the user has pressed "copy"
+		#xsel --clear --clipboard
+		echo -n "$outstr" | xsel --input --clipboard
+
+		# Delete selected text in the application and clear primary buffer
+		# (may only be needed in terminal emulators and such)
+		xsel --delete --primary
+
+	else
+		# Nothing is selected, so clear clipboard for the paste and restore
+		# actions to work properly
+		xsel --clear --clipboard
+	fi
 	;;
 
-cleanup)
+restore)
 	# Restore previous clipboard content and clear secondary buffer
+	#xsel --clear --clipboard
 	xsel --output --secondary | xsel --input --clipboard
 	xsel --clear --secondary
 	;;
@@ -174,5 +198,10 @@ cleanup)
 esac
 
 # ============================================================================ #
+
+# Debug
+printf >&1 "puny-switcher: primary   : %s\n" "$(xsel --output --primary)"
+printf >&1 "puny-switcher: secondary : %s\n" "$(xsel --output --secondary)"
+printf >&1 "puny-switcher: clipboard : %s\n" "$(xsel --output --clipboard)"
 
 exit 0
