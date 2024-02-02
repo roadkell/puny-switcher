@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 #
-# $1: g|get|s|set|c|convert
-# $2: layout to set (if $1="s|set") or to convert to (if $1="c|convert")
-# $3: scope: w|word|l|line|s|selection
+# ============================================================================ #
+#
+# Puny-switcher: small script for correcting text typed in a wrong layout
+# (aka Punto-switching) and layout switching by console command
+# https://github.com/roadkell/puny-switcher
+#
+# Arguments:
+# 	$1: action: get|set|iset|convert|cleanup
+# 	$2: layout name (for set) or index (for iset) to switch to: en|ru|0|1
+#
+# TODO: detect and parse keyboard layouts from the current xkb config
+# (maybe by using https://github.com/39aldo39/klfc)
+#
+# ============================================================================ #
 
 # \x2F = / = slash
 # \x5C = \ = backslash
@@ -24,85 +35,103 @@ ru3='фывапролджэ'
 RU4='ЯЧСМИТЬБЮ,'
 ru4='ячсмитьбю.'
 
-# TODO: detect and parse keyboard layouts from the current xkb config
-# (maybe using https://github.com/39aldo39/klfc)
 declare -A chardict
 chardict["us"]="$us1""$us2""$us3""$us4""$US1""$US2""$US3""$US4"
 chardict["ru"]="$ru1""$ru2""$ru3""$ru4""$RU1""$RU2""$RU3""$RU4"
 
-function setlayout() {
-	# Switch keyboard layout using Gnome extension
+# ============================================================================ #
+
+setlayout() {
+	# Switch keyboard layouts using Gnome extension
+	# 	$1: layout short name
 	gdbus call --session --dest org.gnome.Shell \
 		--object-path /me/madhead/Shyriiwook \
 		--method me.madhead.Shyriiwook.activate "$1" &>/dev/null
 }
 
-function convert() {
+readdbus() {
+	# Get current and available keyboard layouts using Gnome extension
+	echo -n "$(gdbus introspect --session --dest org.gnome.Shell \
+		--object-path /me/madhead/Shyriiwook --only-properties)"
+}
+
+getlayout() {
+	# Get current keyboard layout name
+	# 	$1: gdbus output text
+	echo -n "$(echo -n "$1" | grep -oP "currentLayout = '\K\w+")"
+}
+
+getlayouts() {
+	# Get an array of available layout names
+	# 	$1: gdbus output text
+	# grep -oP "availableLayouts = \[\K'\w+', '\w+'" returns a string like "us', 'ru"
+	# sed s/"['|,]"/""/g removes apostrophes and commas
+	# read -ra layouts <<< "$mystring" converts the string into an array
+	read -ra layouts <<<"$(echo -n "$1" |
+		grep -oP "availableLayouts = \['\K\w+', '\w+" | sed s/"['|,]"/""/g)"
+	# In Bash, variables created inside a function are kept by default, i.e.
+	# ${layouts} array will persist after function exit
+	#echo -n "${layouts[@]}"
+}
+
+strconv() {
 	# sed "y/$aaa/$bbb/" transliterates input string by replacing characters
 	# which appear in $aaa to corresponding characters in $bbb
 	echo -n "$(echo -n "$1" | sed "y/$2/$3/")"
 }
 
-# Get current keyboard layout using Gnome extension and regex magic
-curlayout=$(gdbus introspect --session --dest org.gnome.Shell \
-	--object-path /me/madhead/Shyriiwook --only-properties |
-	grep -oP "currentLayout = '\K\w+")
-
-srcchars="${chardict["$curlayout"]}"
+# ============================================================================ #
 
 case "$1" in
 
-g | get)
-	# Print current layout short name and its chars to stdout
+get)
+	# Print available layouts, current layout, and its chars to stdout
+	gdbusstr=$(readdbus)
+	getlayouts "$gdbusstr"
+	echo "${layouts[@]}"
+	curlayout=$(getlayout "$gdbusstr")
 	echo "$curlayout"
+	srcchars="${chardict["$curlayout"]}"
 	echo "$srcchars"
 	;;
 
-s | set)
-	# Switch keyboard layout using Gnome extension
+set)
+	# Set keyboard layout by name: us|ru
 	setlayout "$2"
 	;;
 
-c | convert)
-	# Convert (punto-switch) recently typed text
+iset)
+	# Set keyboard layout by index: 0|1
+	gdbusstr=$(readdbus)
+	getlayouts "$gdbusstr"
+	newlayout="${layouts["$2"]}"
+	setlayout "$newlayout"
+	;;
 
-	setlayout "$2"
+convert)
+	# Convert selected text
 
-	destchars="${chardict["$2"]}"
+	gdbusstr=$(readdbus)
+	getlayouts "$gdbusstr"
+	curlayout=$(getlayout "$gdbusstr")
+	#newlayout="${layouts["$2"]}"
 
-	# Save clipboard content
-	old_clipboard=$(xsel --output --clipboard)
+	if [[ "$curlayout" == "${layouts[0]}" ]]; then
+		newlayout=${layouts[1]}
+	else
+		newlayout=${layouts[0]}
+	fi
 
-	case "$3" in
-	s | selection)
-		# Read and convert currently selected text
-		# Get content of the primary buffer, i.e. latest active selection made in any window
-		instr=$(xsel --output --primary)
-		outstr=$(convert "$instr" "$srcchars" "$destchars")
-		;;
-	l | line)
-		# Select and convert line, up to the cursor position
-		xdotool key --clearmodifiers Shift+Home
-		instr=$(xsel --output --primary)
-		outstr=$(convert "$instr" "$srcchars" "$destchars")
-		;;
-	w | word)
-		# Select line up to the cursor position, convert last word, concatenate
-		xdotool key --clearmodifiers Shift+Home
-		instr=$(xsel --output --primary)
-		# grep -oP "\S+$" returns last word in a string
-		lastword=$(echo -n "$instr" | grep -oP "\S+$")
-		lastword_converted=$(convert "$lastword" "$srcchars" "$destchars")
-		# ${#string} returns length of string
-		# ((${#string} - ${#lastword})) returns length of string minus length of last word
-		# ${string::N} returns first N chars of string
-		outstr="${instr::((${#instr} - ${#lastword}))}""$lastword_converted"
-		;;
-	*)
-		printf >&2 'puny-switcher: error: 3rd argument must be w|word|l|line|s|selection\n'
-		exit 1
-		;;
-	esac
+	srcchars="${chardict["$curlayout"]}"
+	destchars="${chardict["$newlayout"]}"
+
+	# Save clipboard content to secondary buffer
+	xsel --output --clipboard | xsel --input --secondary
+
+	# Get content of the primary buffer, i.e. latest active selection made in any window
+	instr=$(xsel --output --primary)
+
+	outstr=$(strconv "$instr" "$srcchars" "$destchars")
 
 	# Debug
 	printf >&1 "%s\n" "$outstr"
@@ -111,26 +140,22 @@ c | convert)
 	# xsel -ib writes to clipboard, as if the user has pressed "copy"
 	echo -n "$outstr" | xsel --input --clipboard
 
-	# Принудительно отключаем Insert
-	#xdotool keyup Insert
-
 	# Delete selected text in the application and clear primary buffer
 	xsel --delete --primary
+	;;
 
-	# Paste clipboard content
-	xdotool key --clearmodifiers Shift+Insert
-
-	# Restore previous clipboard content
-	echo -n "$old_clipboard" | xsel --input --clipboard
-
-	# Отпускаем возможно залипшие Shift и Insert
-	xdotool keyup Shift_L Shift_R Insert
+cleanup)
+	# Restore previous clipboard content and clear secondary buffer
+	xsel --output --secondary | xsel --input --clipboard
+	xsel --clear --secondary
 	;;
 
 *)
-	printf >&2 'puny-switcher: error: 1st argument must be g|get|s|set|c|convert\n'
+	printf >&2 'puny-switcher: error: unknown argument: %s\n' "$1"
 	exit 1
 	;;
 esac
+
+# ============================================================================ #
 
 exit 0
