@@ -2,7 +2,7 @@
 #
 # ============================================================================ #
 #
-# Puny-switcher: small script for correcting text typed in a wrong layout
+# Puny Switcher: small script for correcting text typed in a wrong layout
 # (aka Punto-switching) and layout switching by console command
 # https://github.com/roadkell/puny-switcher
 #
