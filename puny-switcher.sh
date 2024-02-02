@@ -49,6 +49,10 @@ setlayout() {
 		--method me.madhead.Shyriiwook.activate "$1" &>/dev/null
 }
 
+setlayout-nognome() {
+	setxkbmap "$1"
+}
+
 readdbus() {
 	# Get current and available keyboard layouts using Gnome extension
 	echo -n "$(gdbus introspect --session --dest org.gnome.Shell \
@@ -61,23 +65,34 @@ getlayout() {
 	echo -n "$(echo -n "$1" | grep -oP "currentLayout = '\K\w+")"
 }
 
+getlayout-nognome() {
+	# Not working yet, requires further parsing:
+	xset -q | grep -A 0 'LED' | cut -c59-67
+	# https://askubuntu.com/q/973257/408821
+}
+
 getlayouts() {
 	# Get an array of available layout names
 	# 	$1: gdbus output text
-	# grep -oP "availableLayouts = \[\K'\w+', '\w+'" returns a string like "us', 'ru"
-	# sed s/"['|,]"/""/g removes apostrophes and commas
-	# read -ra layouts <<< "$mystring" converts the string into an array
+	# grep -oP "availableLayouts = \['\K\w+', '\w+" returns a string like "us', 'ru".
+	# sed s/"['|,]"/""/g removes apostrophes and commas.
+	# read -ra layouts <<< "$mystring" converts the string into an array.
 	read -ra layouts <<<"$(echo -n "$1" |
 		grep -oP "availableLayouts = \['\K\w+', '\w+" | sed s/"['|,]"/""/g)"
 	# In Bash, variables created inside a function are kept by default, i.e.
-	# ${layouts} array will persist after function exit
-	#echo -n "${layouts[@]}"
+	# ${layouts} array will persist after function exit.
+}
+
+getlayouts-nognome() {
+	# Get an array of available layouts
+	read -ra layouts <<<"$(setxkbmap -query |
+		grep -oP "layout: \s*\K\w*,\w*" | sed y/","/" "/)"
 }
 
 strconv() {
-	# sed "y/$aaa/$bbb/" transliterates input string by replacing characters
+	# sed y/$aaa/$bbb/ transliterates input string by replacing characters
 	# which appear in $aaa to corresponding characters in $bbb
-	echo -n "$(echo -n "$1" | sed "y/$2/$3/")"
+	echo -n "$(echo -n "$1" | sed y/"$2"/"$3"/)"
 }
 
 # ============================================================================ #
@@ -96,7 +111,7 @@ get)
 	;;
 
 set)
-	# Set keyboard layout by name: us|ru
+	# Set keyboard layout by name
 	setlayout "$2"
 	;;
 
@@ -114,7 +129,6 @@ convert)
 	gdbusstr=$(readdbus)
 	getlayouts "$gdbusstr"
 	curlayout=$(getlayout "$gdbusstr")
-	#newlayout="${layouts["$2"]}"
 
 	if [[ "$curlayout" == "${layouts[0]}" ]]; then
 		newlayout=${layouts[1]}
@@ -127,6 +141,8 @@ convert)
 
 	# Save clipboard content to secondary buffer
 	xsel --output --clipboard | xsel --input --secondary
+	# Alternatively, xclip can be used like
+	# xclip -out -selection clipboard | xsel -in -selection secondary
 
 	# Get content of the primary buffer, i.e. latest active selection made in any window
 	instr=$(xsel --output --primary)
@@ -141,6 +157,7 @@ convert)
 	echo -n "$outstr" | xsel --input --clipboard
 
 	# Delete selected text in the application and clear primary buffer
+	# (may only be needed in terminal emulators and such)
 	xsel --delete --primary
 	;;
 
