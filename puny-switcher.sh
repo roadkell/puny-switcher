@@ -16,11 +16,11 @@
 # ============================================================================ #
 
 # Debug
-printf >&1 "==============================================================================\n"
-printf >&1 "puny-switcher started: primary   : %s\n" "$(xsel --output --primary -v)"
-printf >&1 "puny-switcher started: secondary : %s\n" "$(xsel --output --secondary -v)"
-printf >&1 "puny-switcher started: clipboard : %s\n" "$(xsel --output --clipboard -v)"
-printf >&1 "==============================================================================\n"
+# printf >&1 "==============================================================================\n"
+# printf >&1 "puny-switcher started: primary   : %s\n" "$(xsel --output --primary -v)"
+# printf >&1 "puny-switcher started: secondary : %s\n" "$(xsel --output --secondary -v)"
+# printf >&1 "puny-switcher started: clipboard : %s\n" "$(xsel --output --clipboard -v)"
+# printf >&1 "==============================================================================\n"
 
 # ============================================================================ #
 # Constants
@@ -206,7 +206,7 @@ convert)
 		outstr=$(strconv "$instr" "$srcchars" "$destchars")
 
 		# Debug
-		printf >&1 "puny-switcher: output string: %s\n" "$outstr"
+		# printf >&1 "puny-switcher: output string: %s\n" "$outstr"
 
 		# xsel -ip writes to the primary buffer, as if the user has made a new selection
 		# xsel -ib writes to clipboard, as if the user has pressed "copy"
@@ -240,10 +240,10 @@ esac
 # ============================================================================ #
 
 # Debug
-printf >&1 "==============================================================================\n"
-printf >&1 "puny-switcher exiting: primary   : %s\n" "$(xsel --output --primary -v)"
-printf >&1 "puny-switcher exiting: secondary : %s\n" "$(xsel --output --secondary -v)"
-printf >&1 "puny-switcher exiting: clipboard : %s\n" "$(xsel --output --clipboard -v)"
-printf >&1 "==============================================================================\n"
+# printf >&1 "==============================================================================\n"
+# printf >&1 "puny-switcher exiting: primary   : %s\n" "$(xsel --output --primary -v)"
+# printf >&1 "puny-switcher exiting: secondary : %s\n" "$(xsel --output --secondary -v)"
+# printf >&1 "puny-switcher exiting: clipboard : %s\n" "$(xsel --output --clipboard -v)"
+# printf >&1 "==============================================================================\n"
 
 exit 0
