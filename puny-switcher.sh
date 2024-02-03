@@ -55,6 +55,8 @@ setlayout() {
 	gdbus call --session --dest org.gnome.Shell \
 		--object-path /me/madhead/Shyriiwook \
 		--method me.madhead.Shyriiwook.activate "$1" &>/dev/null
+	# TODO: replace with
+	# busctl --user call org.gnome.Shell /me/madhead/Shyriiwook me.madhead.Shyriiwook activate s "$1"
 }
 
 setlayout-nognome() {
@@ -65,6 +67,9 @@ readdbus() {
 	# Get current and available keyboard layouts using Gnome extension
 	echo -n "$(gdbus introspect --session --dest org.gnome.Shell \
 		--object-path /me/madhead/Shyriiwook --only-properties)"
+	# TODO: replace with
+	# busctl --user get-property org.gnome.Shell /me/madhead/Shyriiwook me.madhead.Shyriiwook currentLayout
+	# busctl --user get-property org.gnome.Shell /me/madhead/Shyriiwook me.madhead.Shyriiwook availableLayouts
 }
 
 getlayout() {
