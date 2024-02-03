@@ -1,3 +1,5 @@
+На других языках: [English](README.en.md)
+
 ## Puny Switcher ##
 
 Скрипт для исправления текста, набранного не в той раскладке (aka Пунто-свитчинг), и для безусловного переключения раскладки в X11 и GNOME.
@@ -18,7 +20,7 @@
 ### Требования ###
 
 - [Расширение для GNOME](https://extensions.gnome.org/extension/6691/shyriiwook) для безусловного переключения раскладки консольной командой ([репозиторий](https://github.com/madhead/shyriiwook))
-- [`kanata`](https://github.com/jtroo/kanata/) или любой другой ремаппер клавиатуры, умеющий макросы и вызывать внешние команды
+- [`kanata`](https://github.com/jtroo/kanata/) или любой другой ремаппер клавиатуры, умеющий макросы и вызов внешних команд
 - [`xsel`](http://www.kfish.org/software/xsel/) для манипуляций буфером обмена и выделением ([репозиторий](https://github.com/kfish/xsel))
 - `busctl` из состава systemd для переключения раскладки через интерфейс D-Bus
 - `sed`, `grep`, `bash`
