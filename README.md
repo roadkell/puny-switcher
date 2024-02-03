@@ -11,14 +11,16 @@ Small script for correcting text typed in a wrong layout (aka Punto-switching) a
 - No keyboard manipulation
 - No modifier watching
 - No key remapping
+- No daemon / service
 - Fast enough to be almost non-intrusive
+- Has alternative function implementations for non-GNOME / non-systemd environments
 
 ### Requirements ###
 
 - [GNOME extension](https://extensions.gnome.org/extension/6691/shyriiwook) for layout switching by console command ([repository](https://github.com/madhead/shyriiwook))
 - [`kanata`](https://github.com/jtroo/kanata/) or any other keyboard remapper with support for macros and shell command invocation
 - [`xsel`](http://www.kfish.org/software/xsel/) for X selection and clipboard manipulation ([repository](https://github.com/kfish/xsel))
-- `gdbus` to switch between layouts (likely already installed on your system)
+- `busctl` from systemd to switch between layouts
 - `sed`, `grep`, `bash`
 
 ### Downsides ###
@@ -27,7 +29,7 @@ Small script for correcting text typed in a wrong layout (aka Punto-switching) a
 - Doesn't work in terminal emulators yet
 - Currently limited to English-Russian layout pair
 - Doesn't account for layout variants yet
-- Untested in non-GNOME environments
+- Untested in non-GNOME / non-systemd environments
 
 ### Important ###
 
