@@ -15,13 +15,12 @@
 #
 # ============================================================================ #
 
-# Ensure only one instance of this script is running at a time
-[ "${FLOCKER_PUNY}" != "$0" ] && exec env FLOCKER_PUNY="$0" flock -en "$0" "$0" "$@" || :
-
 # Debug
+printf >&1 "\n"
 printf >&1 "puny-switcher started: primary   : %s\n" "$(xsel --output --primary -v)"
 printf >&1 "puny-switcher started: secondary : %s\n" "$(xsel --output --secondary -v)"
 printf >&1 "puny-switcher started: clipboard : %s\n" "$(xsel --output --clipboard -v)"
+printf >&1 "\n"
 
 # \x2F = / = slash
 # \x5C = \ = backslash
@@ -159,9 +158,6 @@ convert)
 	# Get content of the primary buffer, i.e. latest active selection made in any window
 	instr=$(xsel --output --primary)
 
-	# Experimental: also save primary content
-	#tmppri=$instr
-
 	NONSPACE="(.|\s)*\S(.|\s)*"
 	if [[ $instr =~ $NONSPACE ]]; then
 		# Selection is non-empty and has non-whitespace characters
@@ -192,17 +188,12 @@ convert)
 		# Delete selected text in the application and clear primary buffer
 		# (may only be needed in terminal emulators and such)
 		#xsel --delete --primary
-		#xsel --clear --primary
 
 	else
 		# Nothing is selected, so clear clipboard for the paste and restore
 		# actions to work properly
 		xsel --clear --clipboard
 	fi
-	;;
-
-pclear)
-	xsel --clear --primary
 	;;
 
 restore)
@@ -221,8 +212,10 @@ esac
 # ============================================================================ #
 
 # Debug
+printf >&1 "\n"
 printf >&1 "puny-switcher exiting: primary   : %s\n" "$(xsel --output --primary -v)"
 printf >&1 "puny-switcher exiting: secondary : %s\n" "$(xsel --output --secondary -v)"
 printf >&1 "puny-switcher exiting: clipboard : %s\n" "$(xsel --output --clipboard -v)"
+printf >&1 "\n"
 
 exit 0
