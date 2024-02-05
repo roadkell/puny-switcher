@@ -13,14 +13,18 @@
 ;; Paths to scripts can be added to kanata systemd service file like this:
 ;; Environment=PATH=%h/.local/bin
 ;;
-;; Actions:
+;; Actions on Shift keys:
 ;; - tap left Shift: switch to first layout
 ;; - tap right Shift: switch to second layout
 ;; - double-tap any Shift: convert a single word and switch layout
 ;; - triple-tap any Shift: convert a line up to the cursor and switch layout
 ;; - hold Shift: default Shift behaviour (after a timeout)
 ;; - Shift + any key: default Shift behaviour (immediately)
-;; - TODO: convert a selection
+;;
+;; Actions on Pause key:
+;; - Pause: convert a single word and switch layout
+;; - Сtrl-Pause: convert a line up to the cursor and switch layout
+;; - TODO: Shift-Pause: convert selection
 
 (defcfg
 	danger-enable-cmd yes
@@ -28,36 +32,62 @@
 )
 
 (defsrc
+	pause
 	lshift rshift
+	lctrl rctrl
 )
 
 (defalias
-	;; Invoke puny-switcher with arguments
+	;; Invoke Puny Switcher with arguments
 	puny-get (cmd puny-switcher.sh "get")
 	puny-switch (cmd puny-switcher.sh "switch")
-	puny-set-0 (cmd puny-switcher.sh "iset" 0)
-	puny-set-1 (cmd puny-switcher.sh "iset" 1)
-	puny-convert (cmd puny-switcher.sh "convert")
-	puny-restore (cmd puny-switcher.sh "restore")
+	puny-set0 (cmd puny-switcher.sh "iset" 0)
+	puny-set1 (cmd puny-switcher.sh "iset" 1)
+	puny-conv (cmd puny-switcher.sh "convert")
+	puny-rst (cmd puny-switcher.sh "restore")
 
 	;; Convert selection, paste result, restore clipboard, switch layout
-	puny-sel (macro @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+	puny-sel (macro @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
 	;; Select a word, convert, paste result, restore clipboard, switch layout
-	puny-word (macro S-C-left 100 @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+	puny-word (macro S-C-left 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
 	;; Select a line, convert, paste result, restore clipboard, switch layout
-	puny-line (macro S-home 100 @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+	puny-line (macro S-home 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
 
 	;; Different actions for different number of taps
-	puny-ttt-0 (tap-dance 200 (@puny-set-0 @puny-word @puny-line))
-	puny-ttt-1 (tap-dance 200 (@puny-set-1 @puny-word @puny-line))
+	puny-ttt0 (tap-dance 200 (@puny-set0 @puny-word @puny-line))
+	puny-ttt1 (tap-dance 200 (@puny-set1 @puny-word @puny-line))
 
 	;; Hold Shift: default Shift behaviour (after a timeout)
 	;; Shift + any key: default Shift behaviour (immediately)
 	;; Tap Shift: initiate tap-dance
-	puny-lshift (tap-hold-press 200 200 @puny-ttt-0 lshift)
-	puny-rshift (tap-hold-press 200 200 @puny-ttt-1 rshift)
+	puny-lshift (tap-hold-press 200 200 @puny-ttt0 lshift)
+	puny-rshift (tap-hold-press 200 200 @puny-ttt1 rshift)
+
+	;; Mini-layers required for Ctrl-Pause and Shift-Pause to function
+	lctrl-ext (multi lctrl (layer-while-held ctrl-layer))
+	rctrl-ext (multi rctrl (layer-while-held ctrl-layer))
+	lshift-ext (multi @puny-lshift (layer-while-held shift-layer))
+	rshift-ext (multi @puny-rshift (layer-while-held shift-layer))
+
+	;; Ctrl-Pause to convert line, Shift-Pause to convert selection
+	puny-ctrl-pause (multi (release-key lctrl) (release-key rctrl) @puny-line)
+	puny-shift-pause (multi (release-key lshift) (release-key rshift) @puny-sel)
 )
 
 (deflayer base
-	@puny-lshift @puny-rshift
+	@puny-word 
+    @lshift-ext @rshift-ext 
+    @lctrl-ext @rctrl-ext
+)
+
+(deflayer ctrl-layer
+	@puny-ctrl-pause 
+    _      _     
+    _     _    
+)
+
+(deflayer shift-layer
+	@puny-shift-pause 
+    _      _     
+    _     _    
 )
