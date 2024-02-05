@@ -2,7 +2,7 @@ In other languages: [Русский](README.ru.md)
 
 ## Puny Switcher ##
 
-Small script for correcting text typed in a wrong layout (aka Punto-switching) and stateless layout switching in X11 and GNOME.
+Script for correcting text typed in a wrong layout (aka Punto-switching) and stateless layout switching in X11 and GNOME.
 
 ### Highlights ###
 
