@@ -1,30 +1,40 @@
-;; Puny Switcher: script for correcting text typed in a wrong layout
-;; (aka Punto-switching) and stateless layout switching in X11 and GNOME
-;; https://github.com/roadkell/puny-switcher
-;;
-;; This is a sample config file for kanata keyboard remapper. It can be used
-;; with puny-switcher as-is or integrated into a bigger custom config.
-;; https://github.com/jtroo/kanata
-;;
-;; Download and install kanata from the official repository. You need
-;; "kanata_cmd_allowed" version, as it allows executing external commands:
-;; https://github.com/jtroo/kanata/releases/latest
-;;
-;; Paths to scripts can be added to kanata systemd service file like this:
-;; Environment=PATH=%h/.local/bin
-;;
-;; Actions on Shift keys:
-;; - tap left Shift: switch to first layout
-;; - tap right Shift: switch to second layout
-;; - double-tap any Shift: convert a single word and switch layout
-;; - triple-tap any Shift: convert a line up to the cursor and switch layout
-;; - hold Shift: default Shift behaviour (after a timeout)
-;; - Shift + any key: default Shift behaviour (immediately)
-;;
-;; Actions on Pause key:
-;; - Pause: convert a single word and switch layout
-;; - Сtrl-Pause: convert a line up to the cursor and switch layout
-;; - TODO: Shift-Pause: convert selection
+#|
+Puny Switcher: script for correcting text typed in a wrong layout
+(aka Punto-switching) and stateless layout switching in X11 and GNOME
+https://github.com/roadkell/puny-switcher
+
+This is a sample config file for kanata keyboard remapper. It can be used
+with Puny Switcher as-is or integrated into a bigger custom config.
+https://github.com/jtroo/kanata
+
+Download and install kanata from the official repository. You need
+"kanata_cmd_allowed" version, as it allows executing external commands:
+https://github.com/jtroo/kanata/releases/latest
+
+Location of puny-switcher.sh script can be provided via PATH env variable
+in kanata systemd service file:
+Environment=PATH=%h/.local/bin
+Alternatively, use absolute path here or execute command via a shell, see
+https://github.com/jtroo/kanata/blob/main/docs/config.adoc#cmd
+
+Actions on Shift keys:
+- tap left Shift: switch to first layout
+- tap right Shift: switch to second layout
+- double-tap any Shift: convert a single word and switch layout
+- triple-tap any Shift: convert a line up to the cursor and switch layout
+- hold Shift: default Shift behaviour (after a timeout)
+- Shift + any key: default Shift behaviour (immediately)
+
+Actions on Pause key:
+- Pause: convert a single word and switch layout
+- Сtrl-Pause: convert a line up to the cursor and switch layout
+- Shift-Pause: convert selection
+
+Hotkeys can be redefined in defsrc section. For example, you can use PrtSc
+key instead of Pause by replacing "pause" with "sys". List of available
+key names is in "str_to_oscode" and "default_mappings" functions here:
+https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
+|#
 
 (defcfg
 	danger-enable-cmd yes
@@ -32,6 +42,7 @@
 )
 
 (defsrc
+	;; Physical keyboard layout
 	pause
 	lshift rshift
 	lctrl rctrl
