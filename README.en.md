@@ -6,7 +6,7 @@ Script for correcting text typed in a wrong layout (aka Punto-switching) and sta
 
 ### Highlights ###
 
-- Stateless layout switching
+- Stateless layout switching: separate hotkey for each layout
 - Correcting layout of a single word / line up to cursor / current selection
 - Clipboard content is preserved
 - No keylogging
