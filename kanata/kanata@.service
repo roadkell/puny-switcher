@@ -1,0 +1,43 @@
+# Kanata keyboard remapper service for Puny Switcher
+# https://github.com/roadkell/puny-switcher
+#
+# Based on
+# https://github.com/jtroo/kanata/discussions/130
+# https://github.com/kmonad/kmonad/blob/master/startup/kmonad%40.service
+#
+# Make sure the Environment=PATH= line below points to the location of
+# puny-switcher.sh script. You can check it by running
+#
+#   which puny-switcher.sh
+#
+# Also, check your kanata executable path:
+#
+#   which kanata
+#
+# and modify the ExecStart= line below if needed.
+# Also, check your DISPLAY env variable, as it can be :0 or :1 or something else:
+#
+#   echo $DISPLAY
+#
+# and modify the Environment=DISPLAY= line below if needed.
+# If your kanata config file is $XDG_CONFIG_HOME/kanata/puny-switcher.kbd
+# (or /etc/kanata/puny-switcher.kbd if kanata is installed system-wide)
+# then you can launch and enable the service by running
+#
+# systemctl enable --now kanata@puny-switcher.service
+
+[Unit]
+Description=Kanata keyboard remapping using config file '%E/kanata/%i.kbd'
+Documentation=https://github.com/jtroo/kanata
+
+[Service]
+Environment=HOME=%h
+Environment=PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:%h/.local/bin
+Environment=DISPLAY=:0
+Type=simple
+Restart=on-failure
+RestartSec=3
+ExecStart=%h/.local/bin/kanata --cfg %E/kanata/%i.kbd
+
+[Install]
+WantedBy=default.target
