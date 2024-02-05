@@ -1,0 +1,63 @@
+;; Puny Switcher: script for correcting text typed in a wrong layout
+;; (aka Punto-switching) and stateless layout switching in X11 and GNOME
+;; https://github.com/roadkell/puny-switcher
+;;
+;; This is a sample config file for kanata keyboard remapper. It can be used
+;; with puny-switcher as-is or integrated into a bigger custom config.
+;; https://github.com/jtroo/kanata
+;;
+;; Download and install kanata from the official repository. You need
+;; "kanata_cmd_allowed" version, as it allows executing external commands:
+;; https://github.com/jtroo/kanata/releases/latest
+;;
+;; Paths to scripts can be added to kanata systemd service file like this:
+;; Environment=PATH=%h/.local/bin
+;;
+;; Actions:
+;; - tap left Shift: switch to first layout
+;; - tap right Shift: switch to second layout
+;; - double-tap any Shift: convert a single word and switch layout
+;; - triple-tap any Shift: convert a line up to the cursor and switch layout
+;; - hold Shift: default Shift behaviour (after a timeout)
+;; - Shift + any key: default Shift behaviour (immediately)
+;; - TODO: convert a selection
+
+(defcfg
+	danger-enable-cmd yes
+	process-unmapped-keys yes
+)
+
+(defsrc
+	lsft rsft
+)
+
+(defalias
+	;; Invoke puny-switcher with arguments
+	puny-get (cmd puny-switcher.sh "get")
+	puny-switch (cmd puny-switcher.sh "switch")
+	puny-set-0 (cmd puny-switcher.sh "iset" 0)
+	puny-set-1 (cmd puny-switcher.sh "iset" 1)
+	puny-convert (cmd puny-switcher.sh "convert")
+	puny-restore (cmd puny-switcher.sh "restore")
+
+	;; Convert selection, paste result, restore clipboard, switch layout
+	puny-sel (macro @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+	;; Select a word, convert, paste result, restore clipboard, switch layout
+	puny-word (macro S-C-left 100 @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+	;; Select a line, convert, paste result, restore clipboard, switch layout
+	puny-line (macro S-home 100 @puny-convert 50 S-ins 50 @puny-restore 10 @puny-switch)
+
+	;; Different actions for different number of taps
+	puny-ttt-0 (tap-dance 200 (@puny-set-0 @puny-word @puny-line))
+	puny-ttt-1 (tap-dance 200 (@puny-set-1 @puny-word @puny-line))
+
+	;; Hold Shift: default Shift behaviour (after a timeout)
+	;; Shift + any key: default Shift behaviour (immediately)
+	;; Tap Shift: initiate tap-dance
+	puny-lsft (tap-hold-press 200 200 @puny-ttt-0 lsft)
+	puny-rsft (tap-hold-press 200 200 @puny-ttt-1 rsft)
+)
+
+(deflayer base
+	@puny-lsft @puny-rsft
+)
