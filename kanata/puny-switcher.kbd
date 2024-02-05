@@ -28,7 +28,7 @@
 )
 
 (defsrc
-	lsft rsft
+	lshift rshift
 )
 
 (defalias
@@ -54,10 +54,10 @@
 	;; Hold Shift: default Shift behaviour (after a timeout)
 	;; Shift + any key: default Shift behaviour (immediately)
 	;; Tap Shift: initiate tap-dance
-	puny-lsft (tap-hold-press 200 200 @puny-ttt-0 lsft)
-	puny-rsft (tap-hold-press 200 200 @puny-ttt-1 rsft)
+	puny-lshift (tap-hold-press 200 200 @puny-ttt-0 lshift)
+	puny-rshift (tap-hold-press 200 200 @puny-ttt-1 rshift)
 )
 
 (deflayer base
-	@puny-lsft @puny-rsft
+	@puny-lshift @puny-rshift
 )
