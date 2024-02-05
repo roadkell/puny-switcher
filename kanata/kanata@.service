@@ -2,6 +2,7 @@
 # https://github.com/roadkell/puny-switcher
 #
 # Based on
+# https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md
 # https://github.com/jtroo/kanata/discussions/130
 # https://github.com/kmonad/kmonad/blob/master/startup/kmonad%40.service
 #
@@ -24,7 +25,7 @@
 # (or /etc/kanata/puny-switcher.kbd if kanata is installed system-wide)
 # then you can launch and enable the service by running
 #
-# systemctl enable --now kanata@puny-switcher.service
+# systemctl --user enable --now kanata@puny-switcher.service
 
 [Unit]
 Description=Kanata keyboard remapping using config file '%E/kanata/%i.kbd'
