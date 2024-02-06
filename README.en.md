@@ -6,14 +6,14 @@ Script for correcting text typed in a wrong layout and stateless layout switchin
 
 ## Highlights ##
 
-- Stateless layout switching: separate hotkey for each layout
 - Correcting layout of a single word / line up to cursor / current selection
+- Stateless layout switching: separate hotkey for each layout
 - Clipboard content is preserved
 - No keylogging
 - No keyboard manipulation
 - No modifier watching
 - No key remapping
-- Has alternative function implementations for non-GNOME / non-systemd environments
+- Has alternative function implementations for non-GNOME and non-systemd environments
 
 ## Installation ##
 
@@ -21,7 +21,7 @@ Script for correcting text typed in a wrong layout and stateless layout switchin
 - Install [xsel](http://www.kfish.org/software/xsel/) for X selection and clipboard manipulation ([repository](https://github.com/kfish/xsel)).
 - Install [kanata](https://github.com/jtroo/kanata/) (in particular, [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest) version that allows command execution) or any other keyboard remapper with support for macros and external command execution.
 - Provide kanata access to the input and uinput subsystem, as described [here](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).
-- Download [the script](./puny-switcher.sh) and save it into `~/.local/bin`. Examine its contents and modify if needed.
+- Download [the script](./puny-switcher.sh) and save it into `~/.local/bin/`. Examine its contents and modify if needed.
 - Permit its execution:
 ```
 chmod +x ~/.local/bin/puny-switcher.sh
@@ -34,11 +34,23 @@ systemctl --user daemon-reload
 systemctl --user enable --now kanata@puny-switcher.service
 systemctl --user status kanata@puny-switcher.service
 ```
-- The script also uses `busctl` command (part of systemd), `sed` and `grep`.
 
 ## Configuration ##
 
-TODO
+Default keys, as defined in [kanata configuration file](./kanata/puny-switcher.kbd):
+- tap <kbd>left Shift</kbd>: switch to first layout
+- tap <kbd>right Shift</kbd>: swtch to second layout
+- double-tap any <kbd>Shift</kbd>: convert a single word and switch layout
+- triple-tap any <kbd>Shift</kbd>: convert a line up to the cursor and switch layout
+- hold <kbd>Shift</kbd>: default Shift behaviour (after a timeout)
+- <kbd>Shift</kbd>+<kbd>any key</kbd>: default Shift behaviour (immediately)
+- <kbd>Pause</kbd>: convert a single word and switch layout
+- <kbd>Сtrl</kbd>+<kbd>Pause</kbd>: convert a line up to the cursor and switch layout
+- <kbd>Shift</kbd>+<kbd>Pause</kbd>: convert selection
+
+They can be redefined in `defsrc` section of the config. For example, you can use <kbd>PrtSc</kbd> key instead of <kbd>Pause</kbd> by replacing `pause` with `sys`. List of available key names is in `str_to_oscode` and `default_mappings` functions in the kanata source:
+https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
+
 
 ## Downsides ##
 
@@ -47,6 +59,18 @@ TODO
 - Currently limited to English-Russian layout pair
 - Doesn't account for layout variants (Dvorak, Typewriter, etc.) yet
 - Untested in non-GNOME / non-systemd environments
+
+## Alternatives ##
+
+If you prefer an all-in-one solution for retyping text typed in a wrong layout, you can try [xswitcher](https://github.com/ds-voix/xswitcher). Other similar projects like `xneur` have long been abandoned. Also, most of them don't work in GNOME due to its strict security policy.
+
+On the other hand, if you already have a favourite keyboard remapper (or just prefer a modular approach), it is likely possible that it can be set up to work with Puny Switcher script. [Here are some popular ones](https://github.com/jtroo/kanata#similar-projects). KMonad, for example, has a config file format similar to kanata. Imporantly, it must support external command execution to be able to invoke `puny-switcher.sh`. If you manage to adapt the provided config to another remapper, I'll gladly include it into the project.
+
+GNOME is complicated in regards to programmatical layout switching. The "correct" way is to use D-Bus messaging. [g3kb-switch](https://github.com/lyokha/g3kb-switch) seems to be the only extension besides [Shyriiwook](https://github.com/madhead/shyriiwook) that works with GNOME 41+ at the moment.
+
+[xsel](http://www.kfish.org/software/xsel/) can be replaced with [xclip](https://github.com/astrand/xclip), if you prefer one over another. Just modify commands and their arguments in `puny-switcher.sh` to work with it.
+
+`gdbus` command can be used instead of `busctl`, if needed: there are even ready-made alternative function implementations in `puny-switcher.sh` for `gdbus`, just modify the source to use them instead of default ones.
 
 ## Important ##
 
