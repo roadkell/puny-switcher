@@ -7,32 +7,31 @@ This is a sample config file for kanata keyboard remapper. It can be used
 with Puny Switcher as-is or integrated into a bigger custom config.
 https://github.com/jtroo/kanata
 
-Download and install kanata from the official repository. You need
-"kanata_cmd_allowed" version, as it allows executing external commands:
+Download and install kanata from the official repository. in particular,
+`kanata_cmd_allowed` version that allows command execution is required:
 https://github.com/jtroo/kanata/releases/latest
 
-Location of puny-switcher.sh script can be provided via PATH env variable
+Location of `puny-switcher.sh` script can be provided via PATH env variable
 in kanata systemd service file:
-Environment=PATH=%h/.local/bin
+	Environment=PATH=%h/.local/bin
 Alternatively, use absolute path here or execute command via a shell, see
 https://github.com/jtroo/kanata/blob/main/docs/config.adoc#cmd
 
-Actions on Shift keys:
+Actions defined here:
 - tap left Shift: switch to first layout
-- tap right Shift: switch to second layout
+- tap right Shift: swtch to second layout
 - double-tap any Shift: convert a single word and switch layout
 - triple-tap any Shift: convert a line up to the cursor and switch layout
 - hold Shift: default Shift behaviour (after a timeout)
-- Shift + any key: default Shift behaviour (immediately)
-
-Actions on Pause key:
+- Shift+any key: default Shift behaviour (immediately)
 - Pause: convert a single word and switch layout
-- Сtrl-Pause: convert a line up to the cursor and switch layout
-- Shift-Pause: convert selection
+- Сtrl+Pause: convert a line up to the cursor and switch layout
+- Shift+Pause: convert selection and switch layout
 
-Hotkeys can be redefined in defsrc section. For example, you can use PrtSc
-key instead of Pause by replacing "pause" with "sys". List of available
-key names is in "str_to_oscode" and "default_mappings" functions here:
+They can be redefined in `defsrc` section below. For example,
+you can use PrtSc key instead of Pause by replacing `pause` with `sys`.
+Available key names can be found in `str_to_oscode` and `default_mappings`
+functions in kanata source:
 https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 |#
 
