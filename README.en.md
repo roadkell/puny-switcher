@@ -76,13 +76,13 @@ commands:
 
 If you prefer an all-in-one solution for retyping text typed in a wrong layout, you can try [xswitcher](https://github.com/ds-voix/xswitcher). Other similar projects like `xneur` have long been abandoned. Also, most of them don't work in GNOME due to its strict security policy.
 
-On the other hand, if you already have a favourite keyboard remapper (or just prefer a modular approach), it is likely possible that it can be set up to work with Puny Switcher script. [Here are some popular ones](https://github.com/jtroo/kanata#similar-projects). KMonad, for example, has a config file format similar to kanata. Imporantly, it must support external command execution to be able to invoke `puny-switcher.sh`. If you manage to adapt the provided config to another remapper, I'll gladly include it into the project.
+On the other hand, if you already have a favourite keyboard remapper (or just prefer a modular approach), it is likely possible that it can be set up to work with Puny Switcher script. [Here are some popular ones](https://github.com/jtroo/kanata#similar-projects). KMonad, for example, has a config file format similar to kanata. Imporantly, it must support external command execution to be able to invoke `puny-switcher.sh` with arguments. If you manage to adapt the provided config to another remapper, I'll gladly include it into the project.
 
-GNOME is complicated in regards to programmatical layout switching. [g3kb-switch](https://github.com/lyokha/g3kb-switch) seems to be the only extension besides [Shyriiwook](https://github.com/madhead/shyriiwook) that works in GNOME 41+ at the moment.
+GNOME is complicated in regards to programmatical layout switching. [g3kb-switch](https://github.com/lyokha/g3kb-switch) seems to be the only extension besides [Shyriiwook](https://github.com/madhead/shyriiwook) that works in GNOME 41+ at the moment. If GNOME support is not required, there is no need for an extension — `setxkbmap` command is enough. Functions named `*-nognome` in the script are alternative implementations for non-GNOME environments.
 
-[xsel](http://www.kfish.org/software/xsel/) can be replaced with [xclip](https://github.com/astrand/xclip), if you prefer one over another. Just modify commands and their arguments in `puny-switcher.sh` to work with it.
+[xsel](http://www.kfish.org/software/xsel/) can be replaced with [xclip](https://github.com/astrand/xclip) for clipboard manipulation, if you prefer one over another. Just modify commands and their arguments in `puny-switcher.sh` to work with it.
 
-`gdbus` command can be used instead of `busctl`, if needed: there are even ready-made alternative function implementations in `puny-switcher.sh` for `gdbus`, just modify the source to use them instead of default ones.
+Similarlly, `gdbus` command can be used instead of `busctl`, if needed: there are ready-made alternative function implementations in `puny-switcher.sh` for `gdbus`. Just modify the source to use them instead of default ones.
 
 ## Important ##
 
