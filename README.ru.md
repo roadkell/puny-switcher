@@ -6,8 +6,8 @@
 
 ## Возможности ##
 
-- Безусловное переключение раскладки: каждому языку свой хоткей
 - Исправление последнего слова / всей строки до курсора / выделенного текста
+- Безусловное переключение раскладки: каждому языку свой хоткей
 - Буфер обмена сохраняется
 - Нет кейлоггинга
 - Нет имитации клавиатурного ввода
@@ -21,22 +21,25 @@
 - Установить [xsel](http://www.kfish.org/software/xsel/) для манипуляций буфером обмена и выделением ([репозиторий](https://github.com/kfish/xsel)).
 - Уcтановить [kanata](https://github.com/jtroo/kanata/) (а именно — версию [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest), позволяющую исполнять внешние команды) или любой другой ремаппер клавиатуры, умеющий макросы и вызов внешних команд.
 - Разрешить kanata доступ к системе ввода, [как описано в инструкции](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).
-- Сохранить [скрипт](./puny-switcher.sh) в `~/.local/bin.`. Изучить его содержимое, по необходимости отредактировав.
+- Сохранить [скрипт](./puny-switcher.sh) в `~/.local/bin/`. Изучить его содержимое, по необходимости отредактировав.
 - Разрешить его исполнение:
 ```
 chmod +x ~/.local/bin/puny-switcher.sh
 ```
 - Сохранить [конфиг для kanata](./kanata/puny-switcher.kbd) в `$XDG_CONFIG_HOME/kanata/` (обычно это `~/.config/kanata/`). Изучить его содержимое, по необходимости отредактировав.
-- Сохранить [systemd-конфиг](./kanata/kanata@.service) в `$XDG_CONFIG_HOME/systemd/user/` (обычно это `~/.config/systemd/user/`) для запуска kanata в качестве сервиса.
+- Сохранить [конфиг для systemd](./kanata/kanata@.service) в `$XDG_CONFIG_HOME/systemd/user/` (обычно это `~/.config/systemd/user/`) для запуска kanata в качестве сервиса.
 - Запустить сервис и проверить его состояние:
 ```
 systemctl --user daemon-reload
 systemctl --user enable --now kanata@puny-switcher.service
 systemctl --user status kanata@puny-switcher.service
 ```
-- В скрипте также используются команды `busctl` (входит в systemd), `sed` и `grep`.
 
 ## Настройка ##
+
+TODO
+
+## Альернативы ##
 
 TODO
 
