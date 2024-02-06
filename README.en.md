@@ -46,7 +46,7 @@ Default keys, as defined in [kanata configuration file](./kanata/puny-switcher.k
 - <kbd>Shift</kbd>+<kbd>any key</kbd>: default Shift behaviour (immediately)
 - <kbd>Pause</kbd>: convert a single word and switch layout
 - <kbd>Сtrl</kbd>+<kbd>Pause</kbd>: convert a line up to the cursor and switch layout
-- <kbd>Shift</kbd>+<kbd>Pause</kbd>: convert selection
+- <kbd>Shift</kbd>+<kbd>Pause</kbd>: convert selection and switch layout
 
 They can be redefined in `defsrc` section of the config. For example, you can use <kbd>PrtSc</kbd> key instead of <kbd>Pause</kbd> by replacing `pause` with `sys`. Available key names can be found in `str_to_oscode` and `default_mappings` functions in [kanata source](https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs).
 
@@ -57,10 +57,10 @@ puny-switcher.sh command [LAYOUT]
 
 commands:
 	get					print list of available layouts, current layout & its characters
-	set LAYOUT_NAME		set layout by name (en|ru)
-	iset LAYOUT_INDEX	set layout by index (0|1)
+	set LAYOUT_NAME		switch layout by name (us|ru)
+	iset LAYOUT_INDEX	switch layout by index (0|1)
 	switch				switch to another layout
-	convert				convert selection & store result in clipboard
+	convert				convert selected text and store result in clipboard
 	restore				restore clipboard after conversion
 ```
 
