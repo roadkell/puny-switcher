@@ -3,7 +3,7 @@
 # ============================================================================ #
 #
 # Puny Switcher: script for correcting text typed in a wrong layout
-# (aka Punto-switching) and stateless layout switching in X11 and GNOME
+# and stateless layout switching in X11 and GNOME
 # https://github.com/roadkell/puny-switcher
 #
 # Arguments:
