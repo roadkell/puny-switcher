@@ -19,15 +19,15 @@ Script for correcting text typed in a wrong layout and stateless layout switchin
 
 - Install [GNOME extension](https://extensions.gnome.org/extension/6691/shyriiwook) for stateless layout switching by console command ([repository](https://github.com/madhead/shyriiwook)).
 - Install [xsel](http://www.kfish.org/software/xsel/) for X selection and clipboard manipulation ([repository](https://github.com/kfish/xsel)).
-- Install [kanata](https://github.com/jtroo/kanata/) (in particular, [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest) version that allows command execution) or any other keyboard remapper with support for macros and external command execution.
-- Provide kanata access to the input and uinput subsystem, as described [here](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).
-- Download [the script](./puny-switcher.sh) and save it into `~/.local/bin/`. Examine its contents and modify if needed.
+- Install [kanata](https://github.com/jtroo/kanata/) (in particular, [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest) version that allows command execution is required) or any other keyboard remapper with support for macros and external command execution.
+- Provide kanata access to input subsystem, as described [here](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).
+- Download the [script](./puny-switcher.sh) and save it into `~/.local/bin/`. Examine its contents and modify if needed.
 - Permit its execution:
 ```
 chmod +x ~/.local/bin/puny-switcher.sh
 ```
-- Download [the kanata configuration file](./kanata/puny-switcher.kbd) and save it into `$XDG_CONFIG_HOME/kanata/` (usually `~/.config/kanata/`). Examine and modify it if needed.
-- Download [the systemd unit file](./kanata/kanata@.service) and save it into `$XDG_CONFIG_HOME/systemd/user/` (usually `~/.config/systemd/user/`) to run kanata as a service.
+- Download the [kanata configuration file](./kanata/puny-switcher.kbd) and save it into `$XDG_CONFIG_HOME/kanata/` (usually `~/.config/kanata/`). Examine and modify it if needed.
+- Download the [systemd unit file](./kanata/kanata@.service) and save it into `$XDG_CONFIG_HOME/systemd/user/` (usually `~/.config/systemd/user/`) to run kanata as a service.
 - Launch the service and check its status:
 ```
 systemctl --user daemon-reload
@@ -48,9 +48,21 @@ Default keys, as defined in [kanata configuration file](./kanata/puny-switcher.k
 - <kbd>Сtrl</kbd>+<kbd>Pause</kbd>: convert a line up to the cursor and switch layout
 - <kbd>Shift</kbd>+<kbd>Pause</kbd>: convert selection
 
-They can be redefined in `defsrc` section of the config. For example, you can use <kbd>PrtSc</kbd> key instead of <kbd>Pause</kbd> by replacing `pause` with `sys`. List of available key names is in `str_to_oscode` and `default_mappings` functions in the kanata source:
-https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
+They can be redefined in `defsrc` section of the config. For example, you can use <kbd>PrtSc</kbd> key instead of <kbd>Pause</kbd> by replacing `pause` with `sys`. Available key names can be found in `str_to_oscode` and `default_mappings` functions in [kanata source](https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs).
 
+## Commands ##
+
+```
+puny-switcher.sh command [LAYOUT]
+
+commands:
+	get					print list of available layouts, current layout & its characters
+	set LAYOUT_NAME		set layout by name (en|ru)
+	iset LAYOUT_INDEX	set layout by index (0|1)
+	switch				switch to another layout
+	convert				convert selection & store result in clipboard
+	restore				restore clipboard after conversion
+```
 
 ## Downsides ##
 
@@ -66,7 +78,7 @@ If you prefer an all-in-one solution for retyping text typed in a wrong layout, 
 
 On the other hand, if you already have a favourite keyboard remapper (or just prefer a modular approach), it is likely possible that it can be set up to work with Puny Switcher script. [Here are some popular ones](https://github.com/jtroo/kanata#similar-projects). KMonad, for example, has a config file format similar to kanata. Imporantly, it must support external command execution to be able to invoke `puny-switcher.sh`. If you manage to adapt the provided config to another remapper, I'll gladly include it into the project.
 
-GNOME is complicated in regards to programmatical layout switching. The "correct" way is to use D-Bus messaging. [g3kb-switch](https://github.com/lyokha/g3kb-switch) seems to be the only extension besides [Shyriiwook](https://github.com/madhead/shyriiwook) that works with GNOME 41+ at the moment.
+GNOME is complicated in regards to programmatical layout switching. [g3kb-switch](https://github.com/lyokha/g3kb-switch) seems to be the only extension besides [Shyriiwook](https://github.com/madhead/shyriiwook) that works in GNOME 41+ at the moment.
 
 [xsel](http://www.kfish.org/software/xsel/) can be replaced with [xclip](https://github.com/astrand/xclip), if you prefer one over another. Just modify commands and their arguments in `puny-switcher.sh` to work with it.
 
