@@ -1,4 +1,4 @@
-На других языках: [English](README.en.md)
+На других языках: [English](./README.en.md)
 
 # Puny Switcher #
 
@@ -17,7 +17,7 @@
 
 ## Установка ##
 
-- Установить [расширение для GNOME](https://extensions.gnome.org/extension/6691/shyriiwook) для безусловного переключения раскладки консольной командой ([репозиторий](https://github.com/madhead/shyriiwook)).
+- Установить [расширение для GNOME](https://extensions.gnome.org/extension/6691/shyriiwook) для программного переключения раскладки ([репозиторий](https://github.com/madhead/shyriiwook)).
 - Установить [xsel](http://www.kfish.org/software/xsel/) для манипуляций буфером обмена и выделением ([репозиторий](https://github.com/kfish/xsel)).
 - Уcтановить [kanata](https://github.com/jtroo/kanata/) (а именно — версию [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest), позволяющую исполнять внешние команды) или любой другой ремаппер клавиатуры, умеющий макросы и вызов внешних команд.
 - Разрешить kanata доступ к системе ввода, как описано в [инструкции](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).

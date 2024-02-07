@@ -1,4 +1,4 @@
-In other languages: [Русский](README.ru.md)
+In other languages: [Русский](./README.ru.md)
 
 # Puny Switcher #
 
@@ -17,7 +17,7 @@ Script for correcting text typed in a wrong layout and stateless layout switchin
 
 ## Installation ##
 
-- Install [GNOME extension](https://extensions.gnome.org/extension/6691/shyriiwook) for stateless layout switching by console command ([repository](https://github.com/madhead/shyriiwook)).
+- Install [GNOME extension](https://extensions.gnome.org/extension/6691/shyriiwook) for programmatical layout switching ([repository](https://github.com/madhead/shyriiwook)).
 - Install [xsel](http://www.kfish.org/software/xsel/) for X selection and clipboard manipulation ([repository](https://github.com/kfish/xsel)).
 - Install [kanata](https://github.com/jtroo/kanata/) (in particular, [`kanata_cmd_allowed`](https://github.com/jtroo/kanata/releases/latest) version that allows command execution is required) or any other keyboard remapper with support for macros and external command execution.
 - Provide kanata access to input subsystem, as described [here](https://github.com/jtroo/kanata/blob/main/docs/setup-linux.md).
