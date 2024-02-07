@@ -56,14 +56,28 @@ https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 	puny-conv (cmd puny-switcher.sh "convert")
 	puny-rst (cmd puny-switcher.sh "restore")
 
-	;; Convert selection, paste result, restore clipboard, switch layout
-	puny-sel (macro @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
-	;; Select a word, convert, paste result, restore clipboard, switch layout
-	puny-word (macro S-C-left 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
-	;; Select a line, convert, paste result, restore clipboard, switch layout
-	puny-line (macro S-home 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch)
+	;; Aliases for releasing keys
+	;; These are required at the start of all conversion sequences to prevent
+	;; simultaneous activation of two or more conv-seq's when mashing keys.
+	;; Plain modifiers on mini-layers are explicitly defined for the same reason,
+	;; as well as to prevent race condition between two or more mini-layers.
+	rlsLC (release-key lctrl)
+	rlsRC (release-key rctrl)
+	rlsLS (release-key lshift)
+	rlsRS (release-key rshift)
+	rlsPause (release-key pause)
 
-	;; Different actions for different number of taps
+	;; Convert selection, paste result, restore clipboard, switch layout
+	puny-sel (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
+		(macro @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+	;; Select a word, convert, paste result, restore clipboard, switch layout
+	puny-word (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
+		(macro S-C-left 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+	;; Select a line, convert, paste result, restore clipboard, switch layout
+	puny-line (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
+		(macro S-home 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+
+	;; Different actions for different number of Shift taps
 	puny-ttt0 (tap-dance 200 (@puny-set0 @puny-word @puny-line))
 	puny-ttt1 (tap-dance 200 (@puny-set1 @puny-word @puny-line))
 
@@ -78,10 +92,6 @@ https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 	rctrl-ext (multi rctrl (layer-while-held ctrl-layer))
 	lshift-ext (multi @puny-lshift (layer-while-held shift-layer))
 	rshift-ext (multi @puny-rshift (layer-while-held shift-layer))
-
-	;; Ctrl-Pause to convert line, Shift-Pause to convert selection
-	puny-ctrl-pause (multi (release-key lctrl) (release-key rctrl) @puny-line)
-	puny-shift-pause (multi (release-key lshift) (release-key rshift) @puny-sel)
 )
 
 (deflayer base
@@ -91,13 +101,13 @@ https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 )
 
 (deflayer ctrl-layer
-	@puny-ctrl-pause 
+	@puny-line 
     _      _     
-    _     _    
+    lctrl rctrl
 )
 
 (deflayer shift-layer
-	@puny-shift-pause 
-    _      _     
+	@puny-sel 
+    lshift rshift 
     _     _    
 )
