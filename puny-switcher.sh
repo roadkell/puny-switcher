@@ -8,8 +8,10 @@
 #
 # Arguments:
 # 	$1: action: get|set|iset|switch|convert|restore
-# 	$2: layout name (for set) or index (for iset) to switch to: en|ru|0|1
+# 	$2: layout name (for set) or index (for iset) to switch to: us|ru|0|1
+#		or a|all|l|list|v|verbose (for get)
 #
+# TODO: convert piped string
 # TODO: detect and parse keyboard layouts from the current xkb config
 # (maybe by using https://github.com/39aldo39/klfc)
 #
@@ -146,13 +148,24 @@ getlayouts-nognome() {
 case "$1" in
 
 get)
-	# Print available layouts, current layout, and its chars to stdout
-	getlayouts
-	printf >&1 "puny-switcher: available layouts: %s\n" "${layouts[@]}"
-	curlayout=$(getlayout)
-	printf >&1 "puny-switcher: current layout: %s\n" "$curlayout"
-	srcchars="${chardict["$curlayout"]}"
-	printf >&1 "puny-switcher: layout characters: %s\n" "$srcchars"
+	case "$2" in
+	v | verbose)
+		# Print available layouts, current layout, and its chars to stdout
+		getlayouts
+		printf >&1 "puny-switcher: available layout: %s\n" "${layouts[@]}"
+		curlayout=$(getlayout)
+		printf >&1 "puny-switcher: current layout: %s\n" "$curlayout"
+		srcchars="${chardict["$curlayout"]}"
+		printf >&1 "puny-switcher: layout characters: %s\n" "$srcchars"
+		;;
+	a | all | l | list)
+		getlayouts
+		echo "${layouts[@]}"
+		;;
+	*)
+		echo "$(getlayout)"
+		;;
+	esac
 	;;
 
 set)
