@@ -12,6 +12,7 @@
 #		or a|all|l|list|v|verbose (for get)
 #
 # TODO: convert piped string
+# TODO: support Wayland (wl-clipboard instead of xclip)
 # TODO: detect and parse keyboard layouts from the current xkb config
 # (maybe by using https://github.com/39aldo39/klfc)
 #
