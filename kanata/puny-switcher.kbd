@@ -47,6 +47,14 @@ https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 	lctrl rctrl
 )
 
+(defvar
+	;; Delays for Puny Switcher macros
+	sel2cnv 100		;; make selection ... convert (default: 100)
+	cnv2pst 50		;; convert ... paste result (default: 50)
+	pst2rst 50		;; paste result ... restore clipboard (default: 50)
+	rst2lsw 10		;; restore clipboard ... switch layout (default: 10)
+)
+
 (defalias
 	;; Invoke Puny Switcher with arguments
 	puny-get (cmd puny-switcher.sh "get")
@@ -69,13 +77,13 @@ https://github.com/jtroo/kanata/blob/main/parser/src/keys/mod.rs
 
 	;; Convert selection, paste result, restore clipboard, switch layout
 	puny-sel (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
-		(macro @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+		(macro @puny-conv $cnv2pst S-ins $pst2rst @puny-rst $rst2lsw @puny-switch))
 	;; Select a word, convert, paste result, restore clipboard, switch layout
 	puny-word (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
-		(macro S-C-left 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+		(macro S-C-left $sel2cnv @puny-conv $cnv2pst S-ins $pst2rst @puny-rst $rst2lsw @puny-switch))
 	;; Select a line, convert, paste result, restore clipboard, switch layout
 	puny-line (multi @rlsLS @rlsRS @rlsLC @rlsRC @rlsPause
-		(macro S-home 100 @puny-conv 50 S-ins 50 @puny-rst 10 @puny-switch))
+		(macro S-home $sel2cnv @puny-conv $cnv2pst S-ins $pst2rst @puny-rst $rst2lsw @puny-switch))
 
 	;; Different actions for different number of Shift taps
 	puny-ttt0 (tap-dance 200 (@puny-set0 @puny-word @puny-line))
